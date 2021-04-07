@@ -1,17 +1,12 @@
 import express from 'express'
-import { graphqlHTTP } from 'express-graphql'
+import apiRoutes from './routes/routes'
 
 import { PORT, SERVER_IP } from './utils/consts'
 import { logServerStart, logEnvStatus } from './utils/internalLogger'
 
-import itemSchema from './graphSchema/itemSchema'
-
 const createHttpServer = () => {
   const httpServer = express()
-  httpServer.use('/api/items', graphqlHTTP({
-    schema: itemSchema,
-    graphiql: true
-  }))
+  httpServer.use('/api/v1', apiRoutes)
   return httpServer
 }
 
@@ -19,6 +14,7 @@ const createHttpServer = () => {
 export const httpServer = createHttpServer()
 
 export default () => {
+  console.log(httpServer)
   httpServer.listen(PORT, SERVER_IP, () => {
     logServerStart()
     logEnvStatus()
