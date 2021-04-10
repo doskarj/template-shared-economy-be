@@ -21,7 +21,7 @@ describe('Item endpoint', () => {
     await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
-    const query = '{ items { _id itemState itemType orderIds createdAt location { lat lng } title price imageUrl }}'
+    const query = '{ items { id itemState itemType orderIds createdAt location { lat lng } title price imageUrl }}'
 
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const items = JSON.parse(response.text).data.items
@@ -32,6 +32,22 @@ describe('Item endpoint', () => {
         expect(itemValue).to.not.be.undefined
         expect(itemValue).to.not.be.null
       })
+    })
+  })
+
+  it('returns item on /api/v1/item', async () => {
+    const createdItem = await itemContext.createOne(itemData.random())
+    await itemContext.createOne(itemData.random())
+    await itemContext.createOne(itemData.random())
+    const query = `{ item (id: "${createdItem._id}") { id itemState itemType orderIds createdAt location { lat lng } title price imageUrl }}`
+
+    const response = await request(httpServer).post('/api/v1/item').send({ query })
+    const item = JSON.parse(response.text).data.item
+
+    expect(createdItem._id.toString()).to.be.eq(item.id)
+    Object.values(item).forEach(itemValue => {
+      expect(itemValue).to.not.be.undefined
+      expect(itemValue).to.not.be.null
     })
   })
 })

@@ -4,3 +4,14 @@ export const transformEnumToQLEnum = (enumaration) => {
     return acc
   }, {})
 }
+
+export const transformMongoIdToId = (entity) => {
+  if (!entity) return entity
+
+  const newEntity = { ...entity._doc }
+
+  delete newEntity['_id']
+  newEntity['id'] = String(entity['_id'])
+
+  return newEntity
+}

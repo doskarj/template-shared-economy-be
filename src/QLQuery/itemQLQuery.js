@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLID, GraphQLList } from 'graphql'
+import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql'
 import itemQLType from '../QLType/itemQLType'
 import itemContext from '../mongoContext/itemContext'
 
@@ -7,11 +7,9 @@ const itemRootQLQuery = new GraphQLObjectType({
   fields: {
     item: {
       type: itemQLType,
-      args: { id: { type: GraphQLID } },
-      async resolve(parent, args) {
-        // TODO: consume args and ID
-        console.log(args)
-        return await itemContext.getAll()[0]
+      args: { id: { type: GraphQLString } },
+      async resolve(parent, { id }) {
+        return await itemContext.getById(id)
       }
     },
     items: {
