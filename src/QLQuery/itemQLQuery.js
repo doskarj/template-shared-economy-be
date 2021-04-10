@@ -10,10 +10,11 @@ const itemRootQLQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       async resolve(parent, args) {
         // TODO: consume args and ID
+        console.log(args)
         return await itemContext.getAll()[0]
       }
     },
-    items:{
+    items: {
       type: new GraphQLList(itemQLType),
       async resolve() {
         return await itemContext.getAll()
