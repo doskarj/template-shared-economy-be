@@ -7,6 +7,7 @@ import { transformEnumToQLEnum } from '../utils'
 const itemQLType = new GraphQLObjectType({
   name: 'Item',
   fields: () => ({
+    _id: { type: new GraphQLNonNull(GraphQLString) },
     itemState: {
       type: new GraphQLEnumType({
         name: 'ItemState',
