@@ -19,10 +19,10 @@ export const logEnvStatus = () => {
 }
 export const logDbConnectSuccess = () => {
   if (NODE_ENV === 'development-test') return
-  console.log('\x1b[33m' + '\nDatabase connection: ' + '\x1b[0m' + 'Successfully connected to: ' + DB_URL)
+  console.log('\x1b[33m' + '\nDatabase connection: \n' + '\x1b[0m' + '(success) ' + DB_URL)
 }
 export const logDbConnectError = (error) => {
   if (NODE_ENV === 'development-test') return
   console.error(error)
-  console.log('\x1b[33m' + '\nDatabase connection: ' + '\x1b[0m' + 'Could not connect to the database. Exiting now...')
+  console.log('\x1b[33m' + '\nDatabase connection: \n' + '\x1b[0m' + 'Could not connect to the database. Exiting now...')
 }

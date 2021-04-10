@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import { DB_URL } from './utils/consts'
-import { logDbConnectSuccess, logDbConnectError } from './utils/internalLogger'
+import { DB_URL } from '../utils/consts'
+import { logDbConnectSuccess, logDbConnectError } from '../utils/internalLogger'
 
 export const connect = async () => {
   try {
@@ -13,7 +13,7 @@ export const connect = async () => {
 }
 
 export const disconnect = async () => {
-
+  // TODO: Not implemented
 }
 
 export default {

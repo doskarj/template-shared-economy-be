@@ -14,7 +14,6 @@ const createHttpServer = () => {
 export const httpServer = createHttpServer()
 
 export default () => {
-  console.log(httpServer)
   httpServer.listen(PORT, SERVER_IP, () => {
     logServerStart()
     logEnvStatus()

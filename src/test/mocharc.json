@@ -1,0 +1,6 @@
+{
+  "spec": "src/test",
+  "exit": true,
+  "recursive": true,
+  "timeout": 3000
+}
