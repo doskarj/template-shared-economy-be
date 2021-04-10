@@ -50,4 +50,27 @@ describe('Item endpoint', () => {
       expect(itemValue).to.not.be.null
     })
   })
+
+  it('creates item on /api/v1/item', async () => {
+    const randomItem = itemData.random()
+    const query = `mutation { 
+      createOne(itemState: ${randomItem.itemState}, itemType: ${randomItem.itemType}, 
+        orderIds: ${randomItem.orderIds.length === 0 ? '[]' : randomItem.orderIds}, createdAt: "${randomItem.createdAt}", 
+        location: {lng: ${randomItem.location.lng}, lat: ${randomItem.location.lat}}, title: "${randomItem.title}", 
+        price: ${randomItem.price}, imageUrl: "${randomItem.imageUrl}") 
+        { id itemState itemType orderIds createdAt location { lng lat } title price imageUrl } 
+      }`
+
+    const response = await request(httpServer).post('/api/v1/item').send({ query })
+    const item = JSON.parse(response.text).data.createOne
+
+    expect(item.id).not.to.be.null
+    expect(item.id).not.to.be.undefined
+    delete item.id
+
+    Object.entries(item).forEach(itemEntry => {
+      expect(randomItem[itemEntry[0]]).to.be.eql(itemEntry[1])
+    })
+  })
 })
+

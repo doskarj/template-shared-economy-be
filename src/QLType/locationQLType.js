@@ -1,6 +1,6 @@
-import { GraphQLObjectType, GraphQLInt, GraphQLNonNull } from 'graphql'
+import { GraphQLInputObjectType, GraphQLObjectType, GraphQLInt, GraphQLNonNull } from 'graphql'
 
-const locationQLType = new GraphQLObjectType({
+const LocationType = new GraphQLObjectType({
   name: 'Location',
   fields: () => ({
     lat: { type: new GraphQLNonNull(GraphQLInt) },
@@ -8,4 +8,15 @@ const locationQLType = new GraphQLObjectType({
   })
 })
 
-export default locationQLType
+const LocationInputType = new GraphQLInputObjectType({
+  name: 'LocationInput',
+  fields: () => ({
+    lat: { type: new GraphQLNonNull(GraphQLInt) },
+    lng: { type: new GraphQLNonNull(GraphQLInt) }
+  })
+})
+
+export default {
+  LocationType,
+  LocationInputType
+}

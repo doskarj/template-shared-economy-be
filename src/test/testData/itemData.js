@@ -7,7 +7,7 @@ const random = () => ({
   itemType: faker.random.arrayElement(Object.values(itemTypes)),
 
   orderIds: [],
-  createdAt: Date.now(),
+  createdAt: String(Date.now()),
 
   location: { lat: faker.datatype.number({ 'min': -90, 'max': 90 }), lng: faker.datatype.number({ 'min': -180, 'max': 180 }) },
   title: faker.commerce.productName(),

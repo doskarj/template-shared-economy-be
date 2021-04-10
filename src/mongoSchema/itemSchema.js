@@ -12,12 +12,12 @@ const itemSchema = new Schema({
 
   orderIds: [ObjectId],
 
-  createdAt: { type: Date, required: true },
-  updatedAt: { type: Date, default: Date.now },
+  createdAt: { type: String, required: true },
+  updatedAt: { type: String, default: String(Date.now) },
 
   location: LocationSchema,
   title: { type: String, required: true },
-  price: { type: Number, required: true},
+  price: { type: Number, required: true },
   imageUrl: { type: String, required: true }
 })
 
