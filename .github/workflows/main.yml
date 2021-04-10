@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - run: npm ci
+      
+    - name: Create .env file
+      run: |
+        touch config/prod.env
+        echo NODE_ENV=${{ secrets.ENV_NODE_ENV }} >> config/prod.env                
+        echo SERVER_IP=${{ secrets.ENV_SERVER_IP }} >> config/prod.env
+        echo PORT=${{ secrets.ENV_PORT }} >> config/prod.env
+        echo DB_URL=${{ secrets.ENV_DB_URL }} >> config/prod.env
+        cat config/prod.env
+        
+    - run: npm run eslint
+    
+    - run: npm run unit-test
+
+    - run: npm run build
+      
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: |
+          dist
