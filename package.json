@@ -7,9 +7,8 @@
     "start": "nodemon --config ./config/nodemon.json --exec babel-node src/index.js",
     "build": "webpack --mode production --config ./build/webpack.config.js",
     "test": "npm run eslint && npm run unit-test",
-    "eslint": "eslint src/ build/",
     "unit-test": "mocha --config ./src/test/mocharc.json --require @babel/polyfill --require @babel/register",
-    "seed": "cd ./src/database/seed && babel-node ./index.js"
+    "eslint": "eslint src/ build/"
   },
   "repository": {
     "type": "git",
