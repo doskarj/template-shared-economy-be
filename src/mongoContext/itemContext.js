@@ -1,4 +1,4 @@
-import Item from '../mongoSchema/ItemSchema'
+import Item from '../mongoSchema/itemSchema'
 
 const createOne = async ({ itemState, itemType, orderIds, createdAt, updatedAt, location, title, price, imageUrl }) => {
   const possibleItem = await Item.findOne({ title }).maxTimeMS(500)
