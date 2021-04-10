@@ -22,10 +22,10 @@ describe('Item endpoint', () => {
     await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
     const query = '{ items { itemState itemType orderIds createdAt location { lat lng } title price imageUrl }}'
-    
+
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const items = JSON.parse(response.text).data.items
-		
+
     expect(items.length).to.be.eq(3)
     items.forEach(item => {
       Object.values(item).forEach(itemValue => {
