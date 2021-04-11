@@ -73,11 +73,11 @@ describe('Item endpoint', () => {
       expect(randomItem[itemEntry[0]]).to.be.eql(itemEntry[1])
     })
   })
-  it.skip('updates item on /api/v1/item', async () => {
+  it('updates item on /api/v1/item', async () => {
     const originalItem = await itemContext.createOne(itemData.random())
     const updateItem = itemData.random()
     const query = `mutation { 
-      updateOne(id: ${originalItem._id} itemState: ${updateItem.itemState}, itemType: ${updateItem.itemType}, 
+      updateOne(id: "${originalItem._id}" itemState: ${updateItem.itemState}, itemType: ${updateItem.itemType}, 
         orderIds: ${updateItem.orderIds.length === 0 ? '[]' : updateItem.orderIds}, createdAt: "${updateItem.createdAt}", 
         location: {lng: ${updateItem.location.lng}, lat: ${updateItem.location.lat}}, title: "${updateItem.title}", 
         price: ${updateItem.price}, imageUrl: "${updateItem.imageUrl}") 
