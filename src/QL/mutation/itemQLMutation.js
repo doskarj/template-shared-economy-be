@@ -43,6 +43,17 @@ const ItemQLMutations = new GraphQLObjectType({
         const item = await itemContext.updateOne(args)
         return item
       }
+    },
+
+    removeOne: {
+      type: ItemQLType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      async resolve(parent, args) {
+        const item = await itemContext.removeOne(args)
+        return item
+      }
     }
 
   }

@@ -14,7 +14,7 @@ const getById = async (id) => {
 const createOne = async ({ itemState, itemType, orderIds, location, title, price, imageUrl }) => {
   const possibleItem = await Item.findOne({ title }).maxTimeMS(500)
   if (possibleItem) {
-    throw 'alreadyCreated'
+    throw 'EntityAlreadyCreated'
   }
 
   const createdAt = Date.now()
@@ -26,7 +26,7 @@ const createOne = async ({ itemState, itemType, orderIds, location, title, price
 const updateOne = async ({ id, itemState, itemType, orderIds, location, title, price, imageUrl }) => {
   const possibleItem = await Item.findById(id).maxTimeMS(500)
   if (!possibleItem) {
-    throw 'updatingUndefined'
+    throw 'EntityNotFound'
   }
 
   const createdAt = Date.now()
@@ -39,6 +39,15 @@ const updateOne = async ({ id, itemState, itemType, orderIds, location, title, p
   return !savedItem || savedItem === {} ? null : savedItem
 }
 
+const removeOne = async ({ id }) => {
+  const possibleItem = await Item.findById(id).maxTimeMS(500)
+  if (!possibleItem) {
+    throw 'EntityNotFound'
+  }
+  const removedItem = await Item.findByIdAndRemove(id)
+
+  return !removedItem || removedItem === {} ? null : removedItem
+}
 const removeAll = async () => {
   await Item.deleteMany({})
 }
@@ -50,5 +59,6 @@ export default {
   createOne,
   updateOne,
 
+  removeOne,
   removeAll
 }

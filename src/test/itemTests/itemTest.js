@@ -97,5 +97,21 @@ describe('Item endpoint', () => {
       expect(updateItem[itemEntry[0]]).to.be.eql(itemEntry[1])
     })
   })
+
+  it('removes item on /api/v1/item', async () => {
+    const originalItem = await itemContext.createOne(itemData.random())
+
+    const removeQuery = `mutation { 
+      removeOne(id: "${originalItem._id}")
+        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
+      }`
+    await request(httpServer).post('/api/v1/item').send({ query: removeQuery })
+
+    const getAllQuery = '{ items { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}'
+    const response = await request(httpServer).post('/api/v1/item').send({ query: getAllQuery })
+
+    const items = JSON.parse(response.text).data.items
+    expect(items.length).to.be.eq(0)
+  })
 })
 
