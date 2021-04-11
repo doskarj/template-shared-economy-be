@@ -3,8 +3,8 @@ import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql'
 import itemQLType from '@QL/type/itemQLType'
 import itemContext from '@mongo/context/itemContext'
 
-const ItemQuery = new GraphQLObjectType({
-  name: 'ItemQuery',
+const ItemQLQuery = new GraphQLObjectType({
+  name: 'ItemQLQuery',
   fields: {
     item: {
       type: itemQLType.ItemType,
@@ -24,6 +24,4 @@ const ItemQuery = new GraphQLObjectType({
   }
 })
 
-export default {
-  ItemQuery
-}
+export default ItemQLQuery
