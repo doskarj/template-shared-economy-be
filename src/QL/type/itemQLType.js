@@ -1,8 +1,9 @@
 import { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull, GraphQLList, GraphQLEnumType } from 'graphql'
+import { transformEnumToQLEnum } from '@utils'
+
 import locationQLType from './locationQLType'
-import itemStates from '../enums/itemStates'
-import itemTypes from '../enums/itemTypes'
-import { transformEnumToQLEnum } from '../utils'
+import itemStates from '@/enums/itemStates'
+import itemTypes from '@/enums/itemTypes'
 
 const ItemType = new GraphQLObjectType({
   name: 'Item',

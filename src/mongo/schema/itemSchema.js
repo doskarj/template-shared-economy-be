@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import LocationSchema from './locationSchema'
-import itemStates from '../enums/itemStates'
-import itemTypes from '../enums/itemTypes'
+import itemStates from '@/enums/itemStates'
+import itemTypes from '@/enums/itemTypes'
 
 const Schema = mongoose.Schema
 const ObjectId = Schema.Types.ObjectId

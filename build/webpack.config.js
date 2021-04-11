@@ -32,5 +32,13 @@ module.exports = {
     new Dotenv({
       path: './config/prod.env'
     })
-  ]
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '../src/'),
+      '@mongo': path.resolve(__dirname, '../src/mongo'),
+      '@QL': path.resolve(__dirname, '../src/QL'),
+      '@utils': path.resolve(__dirname, '../src/utils'),
+    }
+  },
 }

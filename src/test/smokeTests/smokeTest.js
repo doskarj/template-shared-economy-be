@@ -1,5 +1,5 @@
-import { httpServer } from '../../server'
-import db from '../../database'
+import { httpServer } from '@/server'
+import db from '@/database'
 import request from 'supertest'
 import { expect } from 'chai'
 

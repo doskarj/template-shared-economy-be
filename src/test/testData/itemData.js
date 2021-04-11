@@ -1,6 +1,6 @@
 import faker from 'faker'
-import itemStates from '../../enums/itemStates'
-import itemTypes from '../../enums/itemTypes'
+import itemStates from '@/enums/itemStates'
+import itemTypes from '@/enums/itemTypes'
 
 const random = () => ({
   itemState: faker.random.arrayElement(Object.values(itemStates)),

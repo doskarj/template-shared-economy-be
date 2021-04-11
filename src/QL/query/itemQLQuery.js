@@ -1,6 +1,7 @@
 import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql'
-import itemQLType from '../QLType/itemQLType'
-import itemContext from '../mongoContext/itemContext'
+
+import itemQLType from '@QL/type/itemQLType'
+import itemContext from '@mongo/context/itemContext'
 
 const ItemQuery = new GraphQLObjectType({
   name: 'ItemQuery',

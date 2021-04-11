@@ -2,9 +2,9 @@ import { Router } from 'express'
 import { graphqlHTTP } from 'express-graphql'
 import { GraphQLSchema } from 'graphql'
 
-import itemQLQuery from '../QLQuery/itemQLQuery'
-import itemQLMutation from '../QLMutation/itemQLMutation'
-import { IS_GRAPHIQL_ON } from '../utils/consts'
+import itemQLQuery from '@QL/query/itemQLQuery'
+import itemQLMutation from '@QL/mutation/itemQLMutation'
+import { IS_GRAPHIQL_ON } from '@utils/consts'
 
 const itemRouter = Router()
 
