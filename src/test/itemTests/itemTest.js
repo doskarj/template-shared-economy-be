@@ -23,7 +23,7 @@ describe('Item endpoint', () => {
     await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
-    const query = '{ items { id itemState itemType orderIds createdAt location { lat lng } title price imageUrl }}'
+    const query = '{ items { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}'
 
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const items = JSON.parse(response.text).data.items
@@ -40,7 +40,7 @@ describe('Item endpoint', () => {
     const createdItem = await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
     await itemContext.createOne(itemData.random())
-    const query = `{ item (id: "${createdItem._id}") { id itemState itemType orderIds createdAt location { lat lng } title price imageUrl }}`
+    const query = `{ item (id: "${createdItem._id}") { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}`
 
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const item = JSON.parse(response.text).data.item
@@ -56,18 +56,19 @@ describe('Item endpoint', () => {
     const randomItem = itemData.random()
     const query = `mutation { 
       createOne(itemState: ${randomItem.itemState}, itemType: ${randomItem.itemType}, 
-        orderIds: ${randomItem.orderIds.length === 0 ? '[]' : randomItem.orderIds}, createdAt: "${randomItem.createdAt}", 
+        orderIds: ${randomItem.orderIds.length === 0 ? '[]' : randomItem.orderIds}, 
         location: {lng: ${randomItem.location.lng}, lat: ${randomItem.location.lat}}, title: "${randomItem.title}", 
         price: ${randomItem.price}, imageUrl: "${randomItem.imageUrl}") 
-        { id itemState itemType orderIds createdAt location { lng lat } title price imageUrl } 
+        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
 
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const item = JSON.parse(response.text).data.createOne
 
-    expect(item.id).not.to.be.null
-    expect(item.id).not.to.be.undefined
-    delete item.id
+    expect(item.id).not.to.be.null && expect(item.id).not.to.be.undefined
+    expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
+    expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
+    delete item.id && delete item.createdAt && delete item.updatedAt
 
     Object.entries(item).forEach(itemEntry => {
       expect(randomItem[itemEntry[0]]).to.be.eql(itemEntry[1])
@@ -78,17 +79,19 @@ describe('Item endpoint', () => {
     const updateItem = itemData.random()
     const query = `mutation { 
       updateOne(id: "${originalItem._id}" itemState: ${updateItem.itemState}, itemType: ${updateItem.itemType}, 
-        orderIds: ${updateItem.orderIds.length === 0 ? '[]' : updateItem.orderIds}, createdAt: "${updateItem.createdAt}", 
+        orderIds: ${updateItem.orderIds.length === 0 ? '[]' : updateItem.orderIds}, 
         location: {lng: ${updateItem.location.lng}, lat: ${updateItem.location.lat}}, title: "${updateItem.title}", 
         price: ${updateItem.price}, imageUrl: "${updateItem.imageUrl}") 
-        { id itemState itemType orderIds createdAt location { lng lat } title price imageUrl } 
+        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
 
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const item = JSON.parse(response.text).data.updateOne
 
     expect(originalItem._id.toString()).to.be.eq(item.id)
-    delete item.id
+    expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
+    expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
+    delete item.id && delete item.createdAt && delete item.updatedAt
 
     Object.entries(item).forEach(itemEntry => {
       expect(updateItem[itemEntry[0]]).to.be.eql(itemEntry[1])

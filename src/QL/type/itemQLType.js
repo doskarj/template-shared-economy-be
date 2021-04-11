@@ -4,8 +4,8 @@ import locationQLType from './locationQLType'
 import ItemStatesQLEnum from '@QL/enums/itemStatesQLEnum'
 import ItemTypesQLEnum from '@QL/enums/itemTypesQLEnum'
 
-const ItemType = new GraphQLObjectType({
-  name: 'Item',
+const ItemQLType = new GraphQLObjectType({
+  name: 'ItemQLType',
   fields: () => ({
     id: { type: new GraphQLNonNull(GraphQLString) },
     itemState: { type: ItemStatesQLEnum },
@@ -13,6 +13,7 @@ const ItemType = new GraphQLObjectType({
 
     orderIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
     createdAt: { type: new GraphQLNonNull(GraphQLString) },
+    updatedAt: { type: new GraphQLNonNull(GraphQLString) },
 
     location: { type: new GraphQLNonNull(locationQLType.LocationQLType) },
     title: { type: new GraphQLNonNull(GraphQLString) },
@@ -21,6 +22,4 @@ const ItemType = new GraphQLObjectType({
   })
 })
 
-export default {
-  ItemType
-}
+export default ItemQLType

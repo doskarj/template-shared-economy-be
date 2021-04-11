@@ -9,7 +9,7 @@ const orderSchema = new Schema({
   userId: { type: ObjectId, required: true },
 
   createdAt: { type: String, required: true },
-  updatedAt: { type: String, default: String(Date.now) },
+  updatedAt: { type: String, default: String(Date.now()) },
 
   price: { type: Number, required: true },
   location: LocationSchema

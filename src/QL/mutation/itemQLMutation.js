@@ -1,7 +1,7 @@
 import { GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLInt } from 'graphql'
 
 import locationQLType from '@QL/type/locationQLType'
-import itemQLType from '@QL/type/itemQLType'
+import ItemQLType from '@QL/type/itemQLType'
 import itemContext from '@mongo/context/itemContext'
 import ItemStatesQLEnum from '@QL/enums/itemStatesQLEnum'
 import ItemTypesQLEnum from '@QL/enums/itemTypesQLEnum'
@@ -11,14 +11,11 @@ const ItemQLMutations = new GraphQLObjectType({
   fields: {
 
     createOne: {
-      type: itemQLType.ItemType,
+      type: ItemQLType,
       args: {
         itemState: { type: ItemStatesQLEnum },
         itemType: { type: ItemTypesQLEnum },
-
         orderIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
-        createdAt: { type: new GraphQLNonNull(GraphQLString) },
-
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: locationQLType.LocationQLInputType },
         price: { type: new GraphQLNonNull(GraphQLInt) },
@@ -31,15 +28,12 @@ const ItemQLMutations = new GraphQLObjectType({
     },
 
     updateOne: {
-      type: itemQLType.ItemType,
+      type: ItemQLType,
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) },
         itemState: { type: ItemStatesQLEnum },
         itemType: { type: ItemTypesQLEnum },
-
         orderIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
-        createdAt: { type: new GraphQLNonNull(GraphQLString) },
-
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: locationQLType.LocationQLInputType },
         price: { type: new GraphQLNonNull(GraphQLInt) },

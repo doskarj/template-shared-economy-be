@@ -1,13 +1,13 @@
 import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql'
 
-import itemQLType from '@QL/type/itemQLType'
+import ItemQLType from '@QL/type/itemQLType'
 import itemContext from '@mongo/context/itemContext'
 
 const ItemQLQuery = new GraphQLObjectType({
   name: 'ItemQLQuery',
   fields: {
     item: {
-      type: itemQLType.ItemType,
+      type: ItemQLType,
       args: {
         id: { type: GraphQLString }
       },
@@ -16,7 +16,7 @@ const ItemQLQuery = new GraphQLObjectType({
       }
     },
     items: {
-      type: new GraphQLList(itemQLType.ItemType),
+      type: new GraphQLList(ItemQLType),
       async resolve() {
         return await itemContext.getAll()
       }
