@@ -9,11 +9,11 @@ const OrderQLQuery = new GraphQLObjectType({
     order: {
       type: OrderQLType,
       args: {
-        orderId: { type: GraphQLString },
-        userId: { type: GraphQLString }
+        userId: { type: GraphQLString },
+        itemId: { type: GraphQLString }
       },
-      async resolve(parent, { orderId, userId }) {
-        return await orderContext.getById({ orderId, userId })
+      async resolve(parent, { userId, itemId }) {
+        return await orderContext.getById({ userId, itemId })
       }
     },
     orders: {

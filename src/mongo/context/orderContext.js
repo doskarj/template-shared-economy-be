@@ -14,8 +14,12 @@ const getAll = async ({ userId }) => {
   return !orders || orders === [] ? null : orders
 }
 const getById = async ({ userId, itemId }) => {
-  const mongoOrder = await Order.find({ userId, itemId }).maxTimeMS(500)
+  const mongoOrder = await Order.findOne({ userId, itemId }).maxTimeMS(500)
   const order = transformMongoIdToId(mongoOrder)
+
+  const item = await Item.findById(itemId)
+  order.item = transformMongoIdToId(item)
+
   return !order || order === {} ? null : order
 }
 

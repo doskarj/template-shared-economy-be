@@ -49,45 +49,59 @@ describe('Order endpoint', () => {
       })
     })
   })
+  it('returns order on /api/v1/order', async () => {
+    const userId = mongoose.Types.ObjectId()
+    const item = await itemContext.createOne(itemData.random())
+    const item2 = await itemContext.createOne(itemData.random())
+    const createdOrder = await orderContext.createOne(orderData.random({ userId, itemId: item.id }))
+    await orderContext.createOne(orderData.random({ userId, itemId: item2.id }))
 
-  // it('returns item on /api/v1/item', async () => {
-  //   const createdItem = await itemContext.createOne(itemData.random())
-  //   await itemContext.createOne(itemData.random())
-  //   await itemContext.createOne(itemData.random())
-  //   const query = `{ item (id: "${createdItem._id}") { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}`
+    const query = `{ order(userId: "${userId}", itemId: "${item.id}") { 
+                      id userId orderState createdAt updatedAt price location { lat lng } item { 
+                          id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
+                        }
+                      }
+                    }`
 
-  //   const response = await request(httpServer).post('/api/v1/item').send({ query })
-  //   const item = JSON.parse(response.text).data.item
+    const response = await request(httpServer).post('/api/v1/order').send({ query })
+    const order = JSON.parse(response.text).data.order
 
-  //   expect(createdItem._id.toString()).to.be.eq(item.id)
-  //   Object.values(item).forEach(itemValue => {
-  //     expect(itemValue).to.not.be.undefined
-  //     expect(itemValue).to.not.be.null
-  //   })
-  // })
+    expect(createdOrder._id.toString()).to.be.eq(order.id)
+    Object.values(order).forEach(orderValue => {
+      expect(orderValue).to.not.be.undefined
+      expect(orderValue).to.not.be.null
+    })
+  })
 
-  // it('creates item on /api/v1/item', async () => {
-  //   const randomItem = itemData.random()
-  //   const query = `mutation {
-  //     createOne(itemState: ${randomItem.itemState}, itemType: ${randomItem.itemType},
-  //       orderIds: ${randomItem.orderIds.length === 0 ? '[]' : randomItem.orderIds},
-  //       location: {lng: ${randomItem.location.lng}, lat: ${randomItem.location.lat}}, title: "${randomItem.title}",
-  //       price: ${randomItem.price}, imageUrl: "${randomItem.imageUrl}")
-  //       { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl }
-  //     }`
+  it('creates order on /api/v1/order', async () => {
+    const userId = mongoose.Types.ObjectId()
+    const item = await itemContext.createOne(itemData.random())
+    const randomOrder = orderData.random()
 
-  //   const response = await request(httpServer).post('/api/v1/item').send({ query })
-  //   const item = JSON.parse(response.text).data.createOne
+    const query = `mutation {
+      createOne(orderState: ${randomOrder.orderState}, itemId: "${item.id}", userId: "${userId}", 
+                location: { lng: ${randomOrder.location.lng}, lat: ${randomOrder.location.lat}}, price: ${randomOrder.price}) {
+                  id userId orderState createdAt updatedAt price location { lat lng } item { 
+                    id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
+                  }
+                }
+      }`
 
-  //   expect(item.id).not.to.be.null && expect(item.id).not.to.be.undefined
-  //   expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
-  //   expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
-  //   delete item.id && delete item.createdAt && delete item.updatedAt
+    const response = await request(httpServer).post('/api/v1/order').send({ query })
+    const order = JSON.parse(response.text).data.createOne
 
-  //   Object.entries(item).forEach(itemEntry => {
-  //     expect(randomItem[itemEntry[0]]).to.be.eql(itemEntry[1])
-  //   })
-  // })
+    expect(order.id).not.to.be.null && expect(order.id).not.to.be.undefined
+    expect(order.createdAt).not.to.be.null && expect(order.createdAt).not.to.be.undefined
+    expect(order.updatedAt).not.to.be.null && expect(order.updatedAt).not.to.be.undefined
+    expect(order.userId).to.be.eql(String(userId))
+    expect(order.item).not.to.be.null && expect(order.item).not.to.be.undefined
+    expect(order.item.id).to.be.eql(item.id)
+    delete order.id && delete order.createdAt && delete order.updatedAt && delete order.userId && delete order.item
+
+    Object.entries(order).forEach(orderEntry => {
+      expect(randomOrder[orderEntry[0]]).to.be.eql(orderEntry[1])
+    })
+  })
   // it('updates item on /api/v1/item', async () => {
   //   const originalItem = await itemContext.createOne(itemData.random())
   //   const updateItem = itemData.random()
