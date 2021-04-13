@@ -2,9 +2,9 @@ import { GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLI
 
 import locationQLType from '@QL/type/locationQLType'
 import ItemQLType from '@QL/type/itemQLType'
-import itemContext from '@mongo/context/itemContext'
 import ItemStatesQLEnum from '@QL/enums/itemStatesQLEnum'
 import ItemTypesQLEnum from '@QL/enums/itemTypesQLEnum'
+import itemContext from '@mongo/context/itemContext'
 
 const ItemQLMutations = new GraphQLObjectType({
   name: 'ItemQLMutations',

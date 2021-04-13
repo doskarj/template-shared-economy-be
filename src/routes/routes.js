@@ -2,6 +2,7 @@ import express, { Router } from 'express'
 import cors from 'cors'
 
 import itemRouter from './itemRouter'
+import orderRouter from './orderRouter'
 
 const routes = Router()
 
@@ -14,6 +15,7 @@ routes.use(cors({
 }))
 
 routes.use('/item', itemRouter)
+routes.use('/order', orderRouter)
 routes.use('/', (req, res) => { res.send('Backend with GraphQL for shared-economy app.') })
 
 export default routes
