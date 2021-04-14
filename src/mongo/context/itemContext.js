@@ -29,7 +29,7 @@ const updateOne = async ({ id, itemState, itemType, orderIds, location, title, p
     throw 'EntityNotFound'
   }
 
-  const createdAt = Date.now()
+  const createdAt = possibleItem.createdAt
   const newItem = await Item.findByIdAndUpdate(
     id,
     { itemState, itemType, orderIds, createdAt, location, title, price, imageUrl },
