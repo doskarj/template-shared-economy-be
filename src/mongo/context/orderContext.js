@@ -41,6 +41,27 @@ const createOne = async ({ orderState, itemId, userId, price, location }) => {
   savedOrder.item = item
   return !savedOrder || savedOrder === {} ? null : savedOrder
 }
+const updateOne = async ({ orderState, itemId, userId }) => {
+  const possibleOrder = await Order.findOne({ itemId, userId }).maxTimeMS(500)
+  if (!possibleOrder) {
+    throw 'EntityNotFound'
+  }
+
+  const item = await Item.findById(itemId).maxTimeMS(500)
+  if (!item) {
+    throw 'SubEntityNotFound'
+  }
+
+  const newOrder = await Order.findByIdAndUpdate(
+    possibleOrder._id,
+    { orderState },
+    { new: true, runValidators: true }
+  ).exec()
+  const savedOrder = await newOrder.save()
+
+  savedOrder.item = item
+  return !savedOrder || savedOrder === {} ? null : savedOrder
+}
 
 const removeAll = async () => {
   await Order.deleteMany({})
@@ -49,7 +70,9 @@ const removeAll = async () => {
 export default {
   getAll,
   getById,
+
   createOne,
+  updateOne,
 
   removeAll
 }
