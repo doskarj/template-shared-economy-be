@@ -1,10 +1,10 @@
 import mongoose from 'mongoose'
 import faker from 'faker'
-import userStates from '@/enums/userStates'
+import userTypes from '@/enums/userTypes'
 
 const random = (nonChangables = {}) => {
   const random = {
-    userType: faker.random.arrayElement(Object.values(userStates)),
+    userType: faker.random.arrayElement(Object.values(userTypes)),
     itemId: mongoose.Types.ObjectId(),
     userId: mongoose.Types.ObjectId(),
     price: faker.datatype.number({ 'min': 50, 'max': 500 }),
