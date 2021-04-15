@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLString, GraphQLList } from 'graphql'
+import { GraphQLObjectType, GraphQLString } from 'graphql'
 
 import UserQLType from '@QL/type/userQLType'
 import userContext from '@mongo/context/userContext'
@@ -6,7 +6,7 @@ import userContext from '@mongo/context/userContext'
 const UserQLQuery = new GraphQLObjectType({
   name: 'UserQLQuery',
   fields: {
-    item: {
+    user: {
       type: UserQLType,
       args: {
         id: { type: GraphQLString }
@@ -14,13 +14,7 @@ const UserQLQuery = new GraphQLObjectType({
       async resolve(parent, { id }) {
         return await userContext.getById(id)
       }
-    },
-    items: {
-      type: new GraphQLList(UserQLType),
-      async resolve() {
-        return await userContext.getAll()
-      }
-    },
+    }
   }
 })
 

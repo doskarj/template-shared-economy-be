@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLString } from 'graphql'
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString } from 'graphql'
 
 import locationQLType from '@QL/type/locationQLType'
 import UserQLType from '@QL/type/userQLType'
@@ -13,9 +13,7 @@ const UserQLMutations = new GraphQLObjectType({
       type: UserQLType,
       args: {
         userType: { type: new GraphQLNonNull(UserTypesQLEnum) },
-        orderIds: { type: new GraphQLList(GraphQLString) },
-
-        location: { type: locationQLType.LocationQLType },
+        location: { type: locationQLType.LocationQLInputType },
         name: { type: GraphQLString },
         email: { type: new GraphQLNonNull(GraphQLString) },
         avatarUrl: { type: GraphQLString }
@@ -29,8 +27,9 @@ const UserQLMutations = new GraphQLObjectType({
     updateOne: {
       type: UserQLType,
       args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
         userType: { type: new GraphQLNonNull(UserTypesQLEnum) },
-        location: { type: locationQLType.LocationQLType },
+        location: { type: locationQLType.LocationQLInputType },
         name: { type: GraphQLString },
         avatarUrl: { type: GraphQLString }
       },

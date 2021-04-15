@@ -1,13 +1,18 @@
 import User from '@mongo/schema/userSchema'
+import Order from '@mongo/schema/orderSchema'
 import { transformMongoIdToId } from '@utils'
 
+// Used only for unit tests
 const getAll = async () => {
   const users = await User.find({}).maxTimeMS(500)
   return !users || users === [] ? null : users
 }
 const getById = async (id) => {
   const mongoUser = await User.findById(id).maxTimeMS(500)
+  const orders = await Order.find({ userId: mongoUser._id }).maxTimeMS(500)
+  
   const user = transformMongoIdToId(mongoUser)
+  user.orders = orders
   return !user || user === {} ? null : user
 }
 
@@ -21,6 +26,9 @@ const createOne = async ({ userType, orderIds, location, name, email, avatarUrl 
   const newUser = new User({ userType, orderIds, createdAt, location, name, email, avatarUrl })
   const savedUser = await newUser.save()
 
+  const orders = await Order.find({ userId: savedUser._id }).maxTimeMS(500)
+  savedUser.orders = orders
+
   return !savedUser || savedUser === {} ? null : savedUser
 }
 const updateOne = async ({ id, userType, location, name, avatarUrl }) => {
@@ -31,10 +39,14 @@ const updateOne = async ({ id, userType, location, name, avatarUrl }) => {
 
   const newUser = await User.findByIdAndUpdate(
     id,
-    { ...possibleUser, userType, location, name, avatarUrl },
+    { userType, location, name, avatarUrl },
     { new: true, runValidators: true }
   ).exec()
   const savedUser = await newUser.save()
+
+  const orders = await Order.find({ userId: savedUser._id }).maxTimeMS(500)
+  savedUser.orders = orders
+
   return !savedUser || savedUser === {} ? null : savedUser
 }
 
