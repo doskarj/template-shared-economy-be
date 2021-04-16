@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLString, GraphQLInt } from 'graphql'
+import { GraphQLObjectType, GraphQLNonNull, GraphQLString, GraphQLInt } from 'graphql'
 
 import locationQLType from '@QL/type/locationQLType'
 import ItemQLType from '@QL/type/itemQLType'
