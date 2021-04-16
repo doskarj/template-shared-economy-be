@@ -6,10 +6,11 @@ import { httpServer } from '@/server'
 import db from '@/database'
 
 import userData from '@/test/testData/userData'
-import userContext from '@/mongo/context/userContext'
 import itemData from '@/test/testData/itemData'
-import itemContext from '@/mongo/context/itemContext'
 import orderData from '@/test/testData/orderData'
+
+import userContext from '@/mongo/context/userContext'
+import itemContext from '@/mongo/context/itemContext'
 import orderContext from '@/mongo/context/orderContext'
 
 describe('User endpoint', () => {
@@ -36,7 +37,6 @@ describe('User endpoint', () => {
                      id userType orders { id userId orderState createdAt updatedAt price location { lat lng } 
                    } createdAt updatedAt location { lat lng } name email avatarUrl }
                   }`
-
     const response = await request(httpServer).post('/api/v1/user').send({ query })
     const user = JSON.parse(response.text).data.user
 
@@ -59,7 +59,6 @@ describe('User endpoint', () => {
           }
         }
       }`
-
     const response = await request(httpServer).post('/api/v1/user').send({ query })
     const user = JSON.parse(response.text).data.createOne
 
@@ -85,7 +84,6 @@ describe('User endpoint', () => {
           }
         }
       }`
-
     const response = await request(httpServer).post('/api/v1/user').send({ query })
     const user = JSON.parse(response.text).data.updateOne
 

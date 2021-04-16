@@ -5,12 +5,14 @@ import { expect } from 'chai'
 import { httpServer } from '@/server'
 import db from '@/database'
 
-import orderData from '@/test/testData/orderData'
-import itemData from '@/test/testData/itemData'
 import userData from '@/test/testData/userData'
-import orderContext from '@/mongo/context/orderContext'
-import itemContext from '@/mongo/context/itemContext'
+import itemData from '@/test/testData/itemData'
+import orderData from '@/test/testData/orderData'
+
 import userContext from '@/mongo/context/userContext'
+import itemContext from '@/mongo/context/itemContext'
+import orderContext from '@/mongo/context/orderContext'
+
 import orderStates from '@/enums/orderStates'
 
 describe('Order endpoint', () => {
@@ -39,7 +41,6 @@ describe('Order endpoint', () => {
                        }
                      }
                    }`
-
     const response = await request(httpServer).post('/api/v1/order').send({ query })
     const orders = JSON.parse(response.text).data.orders
 
@@ -64,7 +65,6 @@ describe('Order endpoint', () => {
                         }
                       }
                     }`
-
     const response = await request(httpServer).post('/api/v1/order').send({ query })
     const order = JSON.parse(response.text).data.order
 
@@ -88,7 +88,6 @@ describe('Order endpoint', () => {
                   }
                 }
       }`
-
     const response = await request(httpServer).post('/api/v1/order').send({ query })
     const order = JSON.parse(response.text).data.createOne
 
@@ -119,6 +118,8 @@ describe('Order endpoint', () => {
                   }
                 }
       }`
+    await request(httpServer).post('/api/v1/order').send({ query })
+
     const query2 = `mutation {
       createOne(orderState: ${randomOrder2.orderState}, itemId: "${item2.id}", userId: "${user.id}", 
                 location: { lng: ${randomOrder2.location.lng}, lat: ${randomOrder2.location.lat}}, price: ${randomOrder2.price}) {
@@ -127,8 +128,6 @@ describe('Order endpoint', () => {
                   }
                 }
       }`
-
-    await request(httpServer).post('/api/v1/order').send({ query })
     await request(httpServer).post('/api/v1/order').send({ query: query2 })
     
     const updatedItem = await itemContext.getById(item.id)
@@ -153,7 +152,6 @@ describe('Order endpoint', () => {
                   }
                 }
       }`
-
     const response = await request(httpServer).post('/api/v1/order').send({ query })
     const order = JSON.parse(response.text).data.updateOne
 

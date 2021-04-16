@@ -29,11 +29,12 @@ const createOne = async ({ itemState, itemType, userId, location, title, price, 
   return !savedItem || savedItem === {} ? null : savedItem
 }
 const updateOne = async ({ id, itemState, itemType, location, title, price, imageUrl }) => {
-  // TODO: Can not change item when orderIds.length > 0
-
   const possibleItem = await Item.findById(id).maxTimeMS(500)
   if (!possibleItem) {
     throw 'EntityNotFound'
+  }
+  if (possibleItem.orderIds.length > 0) {
+    throw 'SubEntityAlreadyPresent'
   }
 
   const newItem = await Item.findByIdAndUpdate(
@@ -46,14 +47,15 @@ const updateOne = async ({ id, itemState, itemType, location, title, price, imag
 }
 
 const removeOne = async ({ id }) => {
-  // TODO: Can not delete item when orderIds.length > 0
-
   const possibleItem = await Item.findById(id).maxTimeMS(500)
   if (!possibleItem) {
     throw 'EntityNotFound'
   }
-  const removedItem = await Item.findByIdAndRemove(id)
+  if (possibleItem.orderIds.length > 0) {
+    throw 'SubEntityAlreadyPresent'
+  }
 
+  const removedItem = await Item.findByIdAndRemove(id)
   return !removedItem || removedItem === {} ? null : removedItem
 }
 const removeAll = async () => {

@@ -5,10 +5,11 @@ import { expect } from 'chai'
 import { httpServer } from '@/server'
 import db from '@/database'
 
+import userData from '../../testData/userData'
 import itemData from '@/test/testData/itemData'
-import userData from '../testData/userData'
-import itemContext from '@/mongo/context/itemContext'
+
 import userContext from '@/mongo/context/userContext'
+import itemContext from '@/mongo/context/itemContext'
 
 describe('Item endpoint', () => {
   before(async () => {
@@ -108,6 +109,9 @@ describe('Item endpoint', () => {
     Object.entries(item).forEach(itemEntry => {
       expect(updateItem[itemEntry[0]]).to.be.eql(itemEntry[1])
     })
+  })
+  it('can not update an item if some order already exists', async () => {
+
   })
 
   it('removes item on /api/v1/item', async () => {
