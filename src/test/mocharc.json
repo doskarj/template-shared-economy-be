@@ -2,5 +2,5 @@
   "spec": "src/test",
   "exit": true,
   "recursive": true,
-  "timeout": 3000
+  "timeout": 5000
 }
