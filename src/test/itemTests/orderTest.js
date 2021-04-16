@@ -92,8 +92,7 @@ describe('Order endpoint', () => {
     const order = JSON.parse(response.text).data.createOne
 
     expect(order.id).not.to.be.null && expect(order.id).not.to.be.undefined
-    expect(order.createdAt).not.to.be.null && expect(order.createdAt).not.to.be.undefined
-    expect(order.updatedAt).not.to.be.null && expect(order.updatedAt).not.to.be.undefined
+    expect(Number(order.updatedAt)).to.be.eq(Number(order.createdAt))
     expect(order.userId).to.be.eql(String(user.id))
     expect(order.item).not.to.be.null && expect(order.item).not.to.be.undefined
     expect(order.item.id).to.be.eql(item.id)
@@ -156,8 +155,7 @@ describe('Order endpoint', () => {
     const order = JSON.parse(response.text).data.updateOne
 
     expect(order.id).not.to.be.null && expect(order.id).not.to.be.undefined
-    expect(order.createdAt).not.to.be.null && expect(order.createdAt).not.to.be.undefined
-    expect(order.updatedAt).not.to.be.null && expect(order.updatedAt).not.to.be.undefined
+    expect(Number(order.updatedAt)).to.be.above(Number(order.createdAt))
     expect(order.userId).to.be.eql(String(user.id))
     expect(order.item).not.to.be.null && expect(order.item).not.to.be.undefined
     expect(order.item.id).to.be.eql(item.id)

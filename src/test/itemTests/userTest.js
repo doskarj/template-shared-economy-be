@@ -63,8 +63,7 @@ describe('User endpoint', () => {
     const user = JSON.parse(response.text).data.createOne
 
     expect(user.id).not.to.be.null && expect(user.id).not.to.be.undefined
-    expect(user.createdAt).not.to.be.null && expect(user.createdAt).not.to.be.undefined
-    expect(user.updatedAt).not.to.be.null && expect(user.updatedAt).not.to.be.undefined
+    expect(Number(user.updatedAt)).to.be.eq(Number(user.createdAt))
     expect(user.orders).not.to.be.null && expect(user.orders).not.to.be.undefined
     delete user.id && delete user.createdAt && delete user.updatedAt && delete user.orders
 
@@ -88,8 +87,7 @@ describe('User endpoint', () => {
     const user = JSON.parse(response.text).data.updateOne
 
     expect(originalUser._id.toString()).to.be.eq(user.id)
-    expect(user.createdAt).not.to.be.null && expect(user.createdAt).not.to.be.undefined
-    expect(user.updatedAt).not.to.be.null && expect(user.updatedAt).not.to.be.undefined
+    expect(Number(user.updatedAt)).to.be.above(Number(user.createdAt))
     expect(user.orders).not.to.be.null && expect(user.orders).not.to.be.undefined
     expect(user.email).not.to.be.null && expect(user.email).not.to.be.undefined
     delete user.id && delete user.createdAt && delete user.updatedAt && delete user.orders && delete user.email

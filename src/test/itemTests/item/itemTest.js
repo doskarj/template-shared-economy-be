@@ -71,8 +71,7 @@ describe('Item endpoint', () => {
     const item = JSON.parse(response.text).data.createOne
 
     expect(item.id).not.to.be.null && expect(item.id).not.to.be.undefined
-    expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
-    expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
+    expect(Number(item.updatedAt)).to.be.eq(Number(item.createdAt))
     delete item.id && delete item.createdAt && delete item.updatedAt
     
     // Does not create/update orderIds on this endpoint
@@ -98,8 +97,7 @@ describe('Item endpoint', () => {
     const item = JSON.parse(response.text).data.updateOne
 
     expect(originalItem._id.toString()).to.be.eq(item.id)
-    expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
-    expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
+    expect(Number(item.updatedAt)).to.be.above(Number(item.createdAt))
     delete item.id && delete item.createdAt && delete item.updatedAt
 
     // Does not create/update orderIds on this endpoint
@@ -109,9 +107,6 @@ describe('Item endpoint', () => {
     Object.entries(item).forEach(itemEntry => {
       expect(updateItem[itemEntry[0]]).to.be.eql(itemEntry[1])
     })
-  })
-  it('can not update an item if some order already exists', async () => {
-
   })
 
   it('removes item on /api/v1/item', async () => {

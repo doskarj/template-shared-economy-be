@@ -13,8 +13,8 @@ const itemSchema = new Schema({
   orderIds: { type: [ObjectId], default: [] },
   userId: { type: ObjectId, required: true },
 
-  createdAt: { type: String, required: true },
-  updatedAt: { type: String, default: String(Date.now()) },
+  createdAt: { type: Date, required: true },
+  updatedAt: { type: Date, required: true },
 
   location: LocationSchema,
   title: { type: String, required: true },

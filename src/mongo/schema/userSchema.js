@@ -9,8 +9,8 @@ const userSchema = new Schema({
   userType: { type: String, enum: Object.values(userTypes), required: true },
   orderIds: [ObjectId],
 
-  createdAt: { type: String, required: true },
-  updatedAt: { type: String, default: String(Date.now()) },
+  createdAt: { type: Date, required: true },
+  updatedAt: { type: Date, required: true },
 
   location: LocationSchema,
   name: { type: String, required: true },

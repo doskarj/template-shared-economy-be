@@ -23,7 +23,8 @@ const createOne = async ({ itemState, itemType, userId, location, title, price, 
   }
 
   const createdAt = Date.now()
-  const newItem = new Item({ itemState, itemType, createdAt, userId, location, title, price, imageUrl })
+  const updatedAt = Date.now()
+  const newItem = new Item({ itemState, itemType, createdAt, updatedAt, userId, location, title, price, imageUrl })
   const savedItem = await newItem.save()
 
   return !savedItem || savedItem === {} ? null : savedItem
@@ -37,9 +38,10 @@ const updateOne = async ({ id, itemState, itemType, location, title, price, imag
     throw 'SubEntityAlreadyPresent'
   }
 
+  const updatedAt = Date.now()
   const newItem = await Item.findByIdAndUpdate(
     id,
-    { itemState, itemType, location, title, price, imageUrl },
+    { itemState, itemType, updatedAt, location, title, price, imageUrl },
     { new: true, runValidators: true }
   ).exec()
   const savedItem = await newItem.save()

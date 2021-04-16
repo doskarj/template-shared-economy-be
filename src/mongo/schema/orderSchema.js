@@ -11,8 +11,8 @@ const orderSchema = new Schema({
 
   orderState: { type: String, enum: Object.values(orderStates), required: true },
 
-  createdAt: { type: String, required: true },
-  updatedAt: { type: String, default: String(Date.now()) },
+  createdAt: { type: Date, required: true },
+  updatedAt: { type: Date, required: true },
 
   price: { type: Number, required: true },
   location: LocationSchema

@@ -26,7 +26,8 @@ const createOne = async ({ userType, orderIds, location, name, email, avatarUrl 
   }
 
   const createdAt = Date.now()
-  const newUser = new User({ userType, orderIds, createdAt, location, name, email, avatarUrl })
+  const updatedAt = Date.now()
+  const newUser = new User({ userType, orderIds, createdAt, updatedAt, location, name, email, avatarUrl })
   const savedUser = await newUser.save()
 
   const orders = await Order.find({ userId: savedUser._id }).maxTimeMS(500)
@@ -40,9 +41,10 @@ const updateOne = async ({ id, userType, location, name, avatarUrl }) => {
     throw 'EntityNotFound'
   }
 
+  const updatedAt = Date.now()
   const newUser = await User.findByIdAndUpdate(
     id,
-    { userType, location, name, avatarUrl },
+    { userType, updatedAt, location, name, avatarUrl },
     { new: true, runValidators: true }
   ).exec()
   const savedUser = await newUser.save()

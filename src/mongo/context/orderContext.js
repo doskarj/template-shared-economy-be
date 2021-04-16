@@ -40,7 +40,8 @@ const createOne = async ({ orderState, itemId, userId, price, location }) => {
   }
   
   const createdAt = Date.now()
-  const newOrder = new Order({ orderState, itemId, userId, createdAt, price, location })
+  const updatedAt = Date.now()
+  const newOrder = new Order({ orderState, itemId, userId, createdAt, updatedAt, price, location })
   const savedOrder = await newOrder.save()
   
   // Map order to item's orderIds
@@ -65,9 +66,10 @@ const updateOne = async ({ orderState, itemId, userId }) => {
     throw 'SubEntityNotFound'
   }
 
+  const updatedAt = Date.now()
   const newOrder = await Order.findByIdAndUpdate(
     possibleOrder._id,
-    { orderState },
+    { orderState, updatedAt },
     { new: true, runValidators: true }
   ).exec()
   const savedOrder = await newOrder.save()
