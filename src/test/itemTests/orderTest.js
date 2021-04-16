@@ -7,9 +7,11 @@ import { httpServer } from '@/server'
 import db from '@/database'
 
 import orderData from '@/test/testData/orderData'
-import orderContext from '@/mongo/context/orderContext'
 import itemData from '@/test/testData/itemData'
+import userData from '@/test/testData/userData'
+import orderContext from '@/mongo/context/orderContext'
 import itemContext from '@/mongo/context/itemContext'
+import userContext from '@/mongo/context/userContext'
 import orderStates from '@/enums/orderStates'
 
 describe('Order endpoint', () => {
@@ -24,15 +26,15 @@ describe('Order endpoint', () => {
   })
 
   it('returns orders on /api/v1/order', async () => {
-    const userId = mongoose.Types.ObjectId()
+    const user = await userContext.createOne(userData.random())
     const item = await itemContext.createOne(itemData.random())
     const item2 = await itemContext.createOne(itemData.random())
     const item3 = await itemContext.createOne(itemData.random())
-    await orderContext.createOne(orderData.random({ userId, itemId: item.id }))
-    await orderContext.createOne(orderData.random({ userId, itemId: item2.id }))
-    await orderContext.createOne(orderData.random({ userId, itemId: item3.id }))
+    await orderContext.createOne(orderData.random({ userId: user.id, itemId: item.id }))
+    await orderContext.createOne(orderData.random({ userId: user.id, itemId: item2.id }))
+    await orderContext.createOne(orderData.random({ userId: user.id, itemId: item3.id }))
 
-    const query = `{ orders(userId: "${userId}") { 
+    const query = `{ orders(userId: "${user.id}") { 
                      userId orderState createdAt updatedAt price location { lat lng } item { 
                          id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
                        }
@@ -51,13 +53,13 @@ describe('Order endpoint', () => {
     })
   })
   it('returns order on /api/v1/order', async () => {
-    const userId = mongoose.Types.ObjectId()
+    const user = await userContext.createOne(userData.random())
     const item = await itemContext.createOne(itemData.random())
     const item2 = await itemContext.createOne(itemData.random())
-    const createdOrder = await orderContext.createOne(orderData.random({ userId, itemId: item.id }))
-    await orderContext.createOne(orderData.random({ userId, itemId: item2.id }))
+    const createdOrder = await orderContext.createOne(orderData.random({ userId: user.id, itemId: item.id }))
+    await orderContext.createOne(orderData.random({ userId: user.id, itemId: item2.id }))
 
-    const query = `{ order(userId: "${userId}", itemId: "${item.id}") { 
+    const query = `{ order(userId: "${user.id}", itemId: "${item.id}") { 
                       id userId orderState createdAt updatedAt price location { lat lng } item { 
                           id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
                         }
@@ -75,12 +77,12 @@ describe('Order endpoint', () => {
   })
 
   it('creates order on /api/v1/order', async () => {
-    const userId = mongoose.Types.ObjectId()
+    const user = await userContext.createOne(userData.random())
     const item = await itemContext.createOne(itemData.random())
     const randomOrder = orderData.random()
 
     const query = `mutation {
-      createOne(orderState: ${randomOrder.orderState}, itemId: "${item.id}", userId: "${userId}", 
+      createOne(orderState: ${randomOrder.orderState}, itemId: "${item.id}", userId: "${user.id}", 
                 location: { lng: ${randomOrder.location.lng}, lat: ${randomOrder.location.lat}}, price: ${randomOrder.price}) {
                   id userId orderState createdAt updatedAt price location { lat lng } item { 
                     id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
@@ -94,7 +96,7 @@ describe('Order endpoint', () => {
     expect(order.id).not.to.be.null && expect(order.id).not.to.be.undefined
     expect(order.createdAt).not.to.be.null && expect(order.createdAt).not.to.be.undefined
     expect(order.updatedAt).not.to.be.null && expect(order.updatedAt).not.to.be.undefined
-    expect(order.userId).to.be.eql(String(userId))
+    expect(order.userId).to.be.eql(String(user.id))
     expect(order.item).not.to.be.null && expect(order.item).not.to.be.undefined
     expect(order.item.id).to.be.eql(item.id)
     delete order.id && delete order.createdAt && delete order.updatedAt && delete order.userId && delete order.item
@@ -103,16 +105,50 @@ describe('Order endpoint', () => {
       expect(randomOrder[orderEntry[0]]).to.be.eql(orderEntry[1])
     })
   })
-  it('updates order on /api/v1/order', async () => {
-    const userId = mongoose.Types.ObjectId()
+  it('links new order with meal and user when created', async () => {
+    const user = await userContext.createOne(userData.random())
     const item = await itemContext.createOne(itemData.random())
     const item2 = await itemContext.createOne(itemData.random())
-    await orderContext.createOne(orderData.random({ userId, itemId: item.id, orderState: orderStates.INITIAL }))
-    await orderContext.createOne(orderData.random({ userId, itemId: item2.id, orderState: orderStates.INITIAL }))
+    const randomOrder = orderData.random({ itemId: item.id, userId: user.id })
+    const randomOrder2 = orderData.random({ itemId: item2.id, userId: user.id })
+
+    const query = `mutation {
+      createOne(orderState: ${randomOrder.orderState}, itemId: "${item.id}", userId: "${user.id}", 
+                location: { lng: ${randomOrder.location.lng}, lat: ${randomOrder.location.lat}}, price: ${randomOrder.price}) {
+                  id userId orderState createdAt updatedAt price location { lat lng } item { 
+                    id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
+                  }
+                }
+      }`
+    const query2 = `mutation {
+      createOne(orderState: ${randomOrder2.orderState}, itemId: "${item2.id}", userId: "${user.id}", 
+                location: { lng: ${randomOrder2.location.lng}, lat: ${randomOrder2.location.lat}}, price: ${randomOrder2.price}) {
+                  id userId orderState createdAt updatedAt price location { lat lng } item { 
+                    id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
+                  }
+                }
+      }`
+
+    await request(httpServer).post('/api/v1/order').send({ query })
+    await request(httpServer).post('/api/v1/order').send({ query: query2 })
+    
+    const updatedItem = await itemContext.getById(item.id)
+    expect(updatedItem.orderIds.length).to.be.eq(1)
+    const updatedItem2 = await itemContext.getById(item2.id)
+    expect(updatedItem2.orderIds.length).to.be.eq(1)
+    const updatedUser = await userContext.getById(user.id)
+    expect(updatedUser.orderIds.length).to.be.eq(2)
+  })
+  it('updates order on /api/v1/order', async () => {
+    const user = await userContext.createOne(userData.random())
+    const item = await itemContext.createOne(itemData.random())
+    const item2 = await itemContext.createOne(itemData.random())
+    await orderContext.createOne(orderData.random({ userId: user.id, itemId: item.id, orderState: orderStates.INITIAL }))
+    await orderContext.createOne(orderData.random({ userId: user.id, itemId: item2.id, orderState: orderStates.INITIAL }))
     const randomOrder = orderData.random({ orderState: orderStates.DELIVERED })
 
     const query = `mutation {
-      updateOne(orderState: ${randomOrder.orderState}, itemId: "${item.id}", userId: "${userId}") {
+      updateOne(orderState: ${randomOrder.orderState}, itemId: "${item.id}", userId: "${user.id}") {
                   id userId orderState createdAt updatedAt price location { lat lng } item { 
                     id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl 
                   }
@@ -125,7 +161,7 @@ describe('Order endpoint', () => {
     expect(order.id).not.to.be.null && expect(order.id).not.to.be.undefined
     expect(order.createdAt).not.to.be.null && expect(order.createdAt).not.to.be.undefined
     expect(order.updatedAt).not.to.be.null && expect(order.updatedAt).not.to.be.undefined
-    expect(order.userId).to.be.eql(String(userId))
+    expect(order.userId).to.be.eql(String(user.id))
     expect(order.item).not.to.be.null && expect(order.item).not.to.be.undefined
     expect(order.item.id).to.be.eql(item.id)
 
