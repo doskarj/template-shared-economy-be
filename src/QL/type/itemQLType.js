@@ -12,6 +12,8 @@ const ItemQLType = new GraphQLObjectType({
     itemType: { type: ItemTypesQLEnum },
 
     orderIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+    userId: { type: new GraphQLNonNull(GraphQLString) },
+
     createdAt: { type: new GraphQLNonNull(GraphQLString) },
     updatedAt: { type: new GraphQLNonNull(GraphQLString) },
 

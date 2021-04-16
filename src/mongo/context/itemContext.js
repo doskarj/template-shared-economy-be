@@ -1,4 +1,5 @@
 import Item from '@mongo/schema/itemSchema'
+import userContext from '@mongo/context/userContext'
 import { transformMongoIdToId } from '@utils'
 
 const getAll = async () => {
@@ -11,28 +12,33 @@ const getById = async (id) => {
   return !item || item === {} ? null : item
 }
 
-const createOne = async ({ itemState, itemType, orderIds, location, title, price, imageUrl }) => {
+const createOne = async ({ itemState, itemType, userId, location, title, price, imageUrl }) => {
   const possibleItem = await Item.findOne({ title }).maxTimeMS(500)
   if (possibleItem) {
     throw 'EntityAlreadyCreated'
   }
+  const user = await userContext.getById(userId)
+  if (!user) {
+    throw 'SubEntityNotFound'
+  }
 
   const createdAt = Date.now()
-  const newItem = new Item({ itemState, itemType, orderIds, createdAt, location, title, price, imageUrl })
+  const newItem = new Item({ itemState, itemType, createdAt, userId, location, title, price, imageUrl })
   const savedItem = await newItem.save()
 
   return !savedItem || savedItem === {} ? null : savedItem
 }
-const updateOne = async ({ id, itemState, itemType, orderIds, location, title, price, imageUrl }) => {
+const updateOne = async ({ id, itemState, itemType, location, title, price, imageUrl }) => {
+  // TODO: Can not change item when orderIds.length > 0
+
   const possibleItem = await Item.findById(id).maxTimeMS(500)
   if (!possibleItem) {
     throw 'EntityNotFound'
   }
 
-  const createdAt = possibleItem.createdAt
   const newItem = await Item.findByIdAndUpdate(
     id,
-    { itemState, itemType, orderIds, createdAt, location, title, price, imageUrl },
+    { itemState, itemType, location, title, price, imageUrl },
     { new: true, runValidators: true }
   ).exec()
   const savedItem = await newItem.save()
@@ -40,6 +46,8 @@ const updateOne = async ({ id, itemState, itemType, orderIds, location, title, p
 }
 
 const removeOne = async ({ id }) => {
+  // TODO: Can not delete item when orderIds.length > 0
+
   const possibleItem = await Item.findById(id).maxTimeMS(500)
   if (!possibleItem) {
     throw 'EntityNotFound'

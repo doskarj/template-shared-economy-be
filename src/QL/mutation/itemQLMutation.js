@@ -15,7 +15,7 @@ const ItemQLMutations = new GraphQLObjectType({
       args: {
         itemState: { type: ItemStatesQLEnum },
         itemType: { type: ItemTypesQLEnum },
-        orderIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        userId: { type: new GraphQLNonNull(GraphQLString) },
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: locationQLType.LocationQLInputType },
         price: { type: new GraphQLNonNull(GraphQLInt) },
@@ -33,7 +33,6 @@ const ItemQLMutations = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
         itemState: { type: ItemStatesQLEnum },
         itemType: { type: ItemTypesQLEnum },
-        orderIds: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
         title: { type: new GraphQLNonNull(GraphQLString) },
         location: { type: locationQLType.LocationQLInputType },
         price: { type: new GraphQLNonNull(GraphQLInt) },

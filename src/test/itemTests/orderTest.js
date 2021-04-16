@@ -1,5 +1,4 @@
 import 'module-alias/register'
-import mongoose from 'mongoose'
 import request from 'supertest'
 import { expect } from 'chai'
 
@@ -27,9 +26,9 @@ describe('Order endpoint', () => {
 
   it('returns orders on /api/v1/order', async () => {
     const user = await userContext.createOne(userData.random())
-    const item = await itemContext.createOne(itemData.random())
-    const item2 = await itemContext.createOne(itemData.random())
-    const item3 = await itemContext.createOne(itemData.random())
+    const item = await itemContext.createOne(itemData.random({ userId: user.id }))
+    const item2 = await itemContext.createOne(itemData.random({ userId: user.id }))
+    const item3 = await itemContext.createOne(itemData.random({ userId: user.id }))
     await orderContext.createOne(orderData.random({ userId: user.id, itemId: item.id }))
     await orderContext.createOne(orderData.random({ userId: user.id, itemId: item2.id }))
     await orderContext.createOne(orderData.random({ userId: user.id, itemId: item3.id }))
@@ -54,8 +53,8 @@ describe('Order endpoint', () => {
   })
   it('returns order on /api/v1/order', async () => {
     const user = await userContext.createOne(userData.random())
-    const item = await itemContext.createOne(itemData.random())
-    const item2 = await itemContext.createOne(itemData.random())
+    const item = await itemContext.createOne(itemData.random({ userId: user.id }))
+    const item2 = await itemContext.createOne(itemData.random({ userId: user.id }))
     const createdOrder = await orderContext.createOne(orderData.random({ userId: user.id, itemId: item.id }))
     await orderContext.createOne(orderData.random({ userId: user.id, itemId: item2.id }))
 
@@ -78,7 +77,7 @@ describe('Order endpoint', () => {
 
   it('creates order on /api/v1/order', async () => {
     const user = await userContext.createOne(userData.random())
-    const item = await itemContext.createOne(itemData.random())
+    const item = await itemContext.createOne(itemData.random({ userId: user.id }))
     const randomOrder = orderData.random()
 
     const query = `mutation {
@@ -107,8 +106,8 @@ describe('Order endpoint', () => {
   })
   it('links new order with meal and user when created', async () => {
     const user = await userContext.createOne(userData.random())
-    const item = await itemContext.createOne(itemData.random())
-    const item2 = await itemContext.createOne(itemData.random())
+    const item = await itemContext.createOne(itemData.random({ userId: user.id }))
+    const item2 = await itemContext.createOne(itemData.random({ userId: user.id }))
     const randomOrder = orderData.random({ itemId: item.id, userId: user.id })
     const randomOrder2 = orderData.random({ itemId: item2.id, userId: user.id })
 
@@ -141,8 +140,8 @@ describe('Order endpoint', () => {
   })
   it('updates order on /api/v1/order', async () => {
     const user = await userContext.createOne(userData.random())
-    const item = await itemContext.createOne(itemData.random())
-    const item2 = await itemContext.createOne(itemData.random())
+    const item = await itemContext.createOne(itemData.random({ userId: user.id }))
+    const item2 = await itemContext.createOne(itemData.random({ userId: user.id }))
     await orderContext.createOne(orderData.random({ userId: user.id, itemId: item.id, orderState: orderStates.INITIAL }))
     await orderContext.createOne(orderData.random({ userId: user.id, itemId: item2.id, orderState: orderStates.INITIAL }))
     const randomOrder = orderData.random({ orderState: orderStates.DELIVERED })

@@ -24,15 +24,15 @@ describe('User endpoint', () => {
   })
 
   it('returns user on /api/v1/user', async () => {
-    const item = await itemContext.createOne(itemData.random())
-    const item2 = await itemContext.createOne(itemData.random())
     const createdUser = await userContext.createOne(userData.random())
+    const item = await itemContext.createOne(itemData.random({ userId: createdUser.id }))
+    const item2 = await itemContext.createOne(itemData.random({ userId: createdUser.id }))
     await userContext.createOne(userData.random())
     await userContext.createOne(userData.random())
     await orderContext.createOne(orderData.random({ userId: createdUser.id, itemId: item.id }))
     await orderContext.createOne(orderData.random({ userId: createdUser.id, itemId: item2.id }))
 
-    const query = `{ user (id: "${createdUser._id}") { 
+    const query = `{ user (id: "${createdUser.id}") { 
                      id userType orders { id userId orderState createdAt updatedAt price location { lat lng } 
                    } createdAt updatedAt location { lat lng } name email avatarUrl }
                   }`

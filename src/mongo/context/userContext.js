@@ -8,10 +8,13 @@ const getAll = async () => {
   return !users || users === [] ? null : users
 }
 const getById = async (id) => {
-  const mongoUser = await User.findById(id).maxTimeMS(500)
-  const orders = await Order.find({ userId: mongoUser._id }).maxTimeMS(500)
+  const possibleUser = await User.findById(id).maxTimeMS(500)
+  if (!possibleUser) {
+    throw 'EntityNotFound'
+  }
+  const orders = await Order.find({ userId: possibleUser._id }).maxTimeMS(500)
   
-  const user = transformMongoIdToId(mongoUser)
+  const user = transformMongoIdToId(possibleUser)
   user.orders = orders
   return !user || user === {} ? null : user
 }

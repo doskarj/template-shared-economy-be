@@ -10,7 +10,8 @@ const itemSchema = new Schema({
   itemState: { type: String, enum: Object.values(itemStates), required: true },
   itemType: { type: String, enum: Object.values(itemTypes), required: true },
 
-  orderIds: [ObjectId],
+  orderIds: { type: [ObjectId], default: [] },
+  userId: { type: ObjectId, required: true },
 
   createdAt: { type: String, required: true },
   updatedAt: { type: String, default: String(Date.now()) },

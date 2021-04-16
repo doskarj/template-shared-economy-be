@@ -6,7 +6,9 @@ import { httpServer } from '@/server'
 import db from '@/database'
 
 import itemData from '@/test/testData/itemData'
+import userData from '../testData/userData'
 import itemContext from '@/mongo/context/itemContext'
+import userContext from '@/mongo/context/userContext'
 
 describe('Item endpoint', () => {
   before(async () => {
@@ -20,11 +22,12 @@ describe('Item endpoint', () => {
   })
 
   it('returns items on /api/v1/item', async () => {
-    await itemContext.createOne(itemData.random())
-    await itemContext.createOne(itemData.random())
-    await itemContext.createOne(itemData.random())
-    const query = '{ items { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}'
+    const user = await userContext.createOne(userData.random())
+    await itemContext.createOne(itemData.random({ userId: user.id }))
+    await itemContext.createOne(itemData.random({ userId: user.id }))
+    await itemContext.createOne(itemData.random({ userId: user.id }))
 
+    const query = '{ items { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}'
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const items = JSON.parse(response.text).data.items
 
@@ -37,11 +40,12 @@ describe('Item endpoint', () => {
     })
   })
   it('returns item on /api/v1/item', async () => {
-    const createdItem = await itemContext.createOne(itemData.random())
-    await itemContext.createOne(itemData.random())
-    await itemContext.createOne(itemData.random())
-    const query = `{ item (id: "${createdItem._id}") { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}`
+    const user = await userContext.createOne(userData.random())
+    const createdItem = await itemContext.createOne(itemData.random({ userId: user.id }))
+    await itemContext.createOne(itemData.random({ userId: user.id }))
+    await itemContext.createOne(itemData.random({ userId: user.id }))
 
+    const query = `{ item (id: "${createdItem._id}") { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}`
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const item = JSON.parse(response.text).data.item
 
@@ -53,15 +57,15 @@ describe('Item endpoint', () => {
   })
 
   it('creates item on /api/v1/item', async () => {
-    const randomItem = itemData.random()
+    const user = await userContext.createOne(userData.random())
+    const randomItem = itemData.random({ userId: user.id })
+
     const query = `mutation { 
-      createOne(itemState: ${randomItem.itemState}, itemType: ${randomItem.itemType}, 
-        orderIds: ${randomItem.orderIds.length === 0 ? '[]' : randomItem.orderIds}, 
+      createOne(itemState: ${randomItem.itemState}, itemType: ${randomItem.itemType}, userId: "${user.id}",
         location: {lng: ${randomItem.location.lng}, lat: ${randomItem.location.lat}}, title: "${randomItem.title}", 
         price: ${randomItem.price}, imageUrl: "${randomItem.imageUrl}") 
-        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
+        { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const item = JSON.parse(response.text).data.createOne
 
@@ -69,22 +73,26 @@ describe('Item endpoint', () => {
     expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
     expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
     delete item.id && delete item.createdAt && delete item.updatedAt
-
+    
+    // Does not create/update orderIds on this endpoint
+    expect(item.orderIds).to.be.eql([])
+    delete item.orderIds
+    
     Object.entries(item).forEach(itemEntry => {
       expect(randomItem[itemEntry[0]]).to.be.eql(itemEntry[1])
     })
   })
   it('updates item on /api/v1/item', async () => {
-    const originalItem = await itemContext.createOne(itemData.random())
-    const updateItem = itemData.random()
+    const user = await userContext.createOne(userData.random())
+    const originalItem = await itemContext.createOne(itemData.random({ userId: user.id }))
+    const updateItem = itemData.random({ userId: user.id })
+
     const query = `mutation { 
       updateOne(id: "${originalItem._id}" itemState: ${updateItem.itemState}, itemType: ${updateItem.itemType}, 
-        orderIds: ${updateItem.orderIds.length === 0 ? '[]' : updateItem.orderIds}, 
         location: {lng: ${updateItem.location.lng}, lat: ${updateItem.location.lat}}, title: "${updateItem.title}", 
         price: ${updateItem.price}, imageUrl: "${updateItem.imageUrl}") 
-        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
+        { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-
     const response = await request(httpServer).post('/api/v1/item').send({ query })
     const item = JSON.parse(response.text).data.updateOne
 
@@ -93,13 +101,18 @@ describe('Item endpoint', () => {
     expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
     delete item.id && delete item.createdAt && delete item.updatedAt
 
+    // Does not create/update orderIds on this endpoint
+    expect(item.orderIds).to.be.eql([])
+    delete item.orderIds
+
     Object.entries(item).forEach(itemEntry => {
       expect(updateItem[itemEntry[0]]).to.be.eql(itemEntry[1])
     })
   })
 
   it('removes item on /api/v1/item', async () => {
-    const originalItem = await itemContext.createOne(itemData.random())
+    const user = await userContext.createOne(userData.random())
+    const originalItem = await itemContext.createOne(itemData.random({ userId: user.id }))
 
     const removeQuery = `mutation { 
       removeOne(id: "${originalItem._id}")
@@ -107,10 +120,7 @@ describe('Item endpoint', () => {
       }`
     await request(httpServer).post('/api/v1/item').send({ query: removeQuery })
 
-    const getAllQuery = '{ items { id itemState itemType orderIds createdAt updatedAt location { lat lng } title price imageUrl }}'
-    const response = await request(httpServer).post('/api/v1/item').send({ query: getAllQuery })
-
-    const items = JSON.parse(response.text).data.items
+    const items = await itemContext.getAll()
     expect(items.length).to.be.eq(0)
   })
 })
