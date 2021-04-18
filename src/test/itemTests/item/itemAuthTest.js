@@ -5,16 +5,14 @@ import { expect } from 'chai'
 import { httpServer } from '@/server'
 import db from '@/database'
 import { removeAllDecouments } from '../../testUtils/testUtils'
-import { authToken } from '../../testUtils/authTestUtils'
 
-import itemData from '@/test/testData/itemData'
 import userData from '../../testData/userData'
-import orderData from '../../testData/orderData'
-import itemContext from '@/mongo/context/itemContext'
-import userContext from '@/mongo/context/userContext'
-import orderContext from '@/mongo/context/orderContext'
+import itemData from '@/test/testData/itemData'
 
-describe('Item endpoint (errors)', () => {
+import userContext from '@/mongo/context/userContext'
+import itemContext from '@/mongo/context/itemContext'
+
+describe('Item endpoint (auth)', () => {
   before(async () => {
     await db.connect()
   })
@@ -26,11 +24,28 @@ describe('Item endpoint (errors)', () => {
     await removeAllDecouments()
   })
 
-  it('can not update an item if there are some orderIds', async () => {
+  it('does not create an item on /api/v1/item when no auth token is provided', async () => {
+    const user = await userContext.createOne(userData.random())
+    const randomItem = itemData.random({ userId: user.id })
+
+    const query = `mutation { 
+      createOne(itemState: ${randomItem.itemState}, itemType: ${randomItem.itemType}, userId: "${user.id}",
+        location: {lng: ${randomItem.location.lng}, lat: ${randomItem.location.lat}}, title: "${randomItem.title}", 
+        price: ${randomItem.price}, imageUrl: "${randomItem.imageUrl}") 
+        { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
+      }`
+    const response = await request(httpServer).post('/api/v1/item').send({ query })
+    
+    const errorMessage = JSON.parse(response.text)
+    expect(errorMessage.errors[0].message.includes('Unauthorized operation.')).to.be.true
+
+    const items = await itemContext.getAll()
+    expect(items.length).to.be.eq(0)
+  })
+  it('does not update an item on /api/v1/item when no auth token is provided', async () => {
     const user = await userContext.createOne(userData.random())
     const originalItem = await itemContext.createOne(itemData.random({ userId: user.id }))
     const updateItem = itemData.random({ userId: user.id })
-    await orderContext.createOne(orderData.random({ userId: user.id, itemId: originalItem.id }))
 
     const query = `mutation { 
       updateOne(id: "${originalItem._id}" itemState: ${updateItem.itemState}, itemType: ${updateItem.itemType}, 
@@ -38,16 +53,16 @@ describe('Item endpoint (errors)', () => {
         price: ${updateItem.price}, imageUrl: "${updateItem.imageUrl}") 
         { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-    const response = await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query })
+    const response = await request(httpServer).post('/api/v1/item').send({ query })
 
     const errorMessage = JSON.parse(response.text)
-    expect(errorMessage.errors[0].message.includes('SubEntityAlreadyPresent')).to.be.true
+    expect(errorMessage.errors[0].message.includes('Unauthorized operation.')).to.be.true
     
     const item = await itemContext.getById(originalItem.id)
     expect(originalItem._id.toString()).to.be.eq(item.id)
     expect(item.createdAt).not.to.be.null && expect(item.createdAt).not.to.be.undefined
     expect(item.updatedAt).not.to.be.null && expect(item.updatedAt).not.to.be.undefined
-    expect(item.orderIds.length).to.be.eq(1)
+    expect(item.orderIds.length).to.be.eq(0)
     expect(item.location.id).to.be.eq(originalItem.location.id)
     delete item.id && delete item.createdAt && delete item.updatedAt && delete item.orderIds && delete item.location && delete item.__v
 
@@ -56,21 +71,20 @@ describe('Item endpoint (errors)', () => {
     })
   })
 
-  it('can not remove an item if there are some orderIds', async () => {
+  it('does not remove an item on /api/v1/item when no auth token is provided', async () => {
     const user = await userContext.createOne(userData.random())
-    const randomItem = await itemContext.createOne(itemData.random({ userId: user.id }))
-    await orderContext.createOne(orderData.random({ userId: user.id, itemId: randomItem.id }))
+    const originalItem = await itemContext.createOne(itemData.random({ userId: user.id }))
 
-    const removeQuery = `mutation { 
-      removeOne(id: "${randomItem.id}")
-        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
+    const removeQuery = `mutation {
+      removeOne(id: "${originalItem._id}")
+        { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl }
       }`
-    const response = await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query: removeQuery })
-    
+    const response = await request(httpServer).post('/api/v1/item').send({ query: removeQuery })
+
     const errorMessage = JSON.parse(response.text)
-    expect(errorMessage.errors[0].message.includes('SubEntityAlreadyPresent')).to.be.true
+    expect(errorMessage.errors[0].message.includes('Unauthorized operation.')).to.be.true
     
-    const item = await itemContext.getById(randomItem.id)
+    const item = await itemContext.getById(originalItem.id)
     expect(item).not.to.be.null && expect(item).not.to.be.undefined
   })
 })
