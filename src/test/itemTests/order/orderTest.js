@@ -4,6 +4,7 @@ import { expect } from 'chai'
 
 import { httpServer } from '@/server'
 import db from '@/database'
+import { removeAllDecouments } from '../../testUtils'
 
 import userData from '@/test/testData/userData'
 import itemData from '@/test/testData/itemData'
@@ -20,10 +21,11 @@ describe('Order endpoint', () => {
     await db.connect()
   })
   after(async () => {
+    await removeAllDecouments()
     await db.disconnect()
   })
   beforeEach(async () => {
-    await orderContext.removeAll()
+    await removeAllDecouments()
   })
 
   it('returns orders on /api/v1/order', async () => {

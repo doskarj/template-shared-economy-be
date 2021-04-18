@@ -4,6 +4,7 @@ import { expect } from 'chai'
 
 import { httpServer } from '@/server'
 import db from '@/database'
+import { removeAllDecouments } from '../../testUtils'
 
 import itemData from '@/test/testData/itemData'
 import userData from '../../testData/userData'
@@ -17,10 +18,11 @@ describe('Item Error endpoint', () => {
     await db.connect()
   })
   after(async () => {
+    await removeAllDecouments()
     await db.disconnect()
   })
   beforeEach(async () => {
-    await itemContext.removeAll()
+    await removeAllDecouments()
   })
 
   it('can not update an item if there are some orderIds', async () => {

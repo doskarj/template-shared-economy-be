@@ -4,6 +4,7 @@ import { expect } from 'chai'
 
 import { httpServer } from '@/server'
 import db from '@/database'
+import { removeAllDecouments } from '../../testUtils'
 
 import userData from '@/test/testData/userData'
 import itemData from '@/test/testData/itemData'
@@ -18,10 +19,11 @@ describe('User endpoint', () => {
     await db.connect()
   })
   after(async () => {
+    await removeAllDecouments()
     await db.disconnect()
   })
   beforeEach(async () => {
-    await userContext.removeAll()
+    await removeAllDecouments()
   })
 
   it('returns user on /api/v1/user', async () => {

@@ -2,7 +2,7 @@ import { PORT, SERVER_IP, NODE_ENV, DB_URL } from './consts'
 
 export const logServerStart = () => {
   if (NODE_ENV === 'unit-test') return
-  const protocol = NODE_ENV === 'development' ? 'https' : 'http'
+  const protocol = NODE_ENV === 'development' ? 'http' : 'http'
   const URL = `${protocol}://${SERVER_IP}:${PORT}`
   console.log('\x1b[33m' + '\nServer is listening on: ' + '\x1b[0m' + URL)
 }
