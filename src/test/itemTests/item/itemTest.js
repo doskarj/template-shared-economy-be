@@ -4,7 +4,8 @@ import { expect } from 'chai'
 
 import { httpServer } from '@/server'
 import db from '@/database'
-import { removeAllDecouments } from '../../testUtils'
+import { removeAllDecouments } from '../../testUtils/testUtils'
+import { authToken } from '../../testUtils/authTestUtils'
 
 import userData from '../../testData/userData'
 import itemData from '@/test/testData/itemData'
@@ -69,7 +70,7 @@ describe('Item endpoint', () => {
         price: ${randomItem.price}, imageUrl: "${randomItem.imageUrl}") 
         { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-    const response = await request(httpServer).post('/api/v1/item').send({ query })
+    const response = await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query })
     const item = JSON.parse(response.text).data.createOne
 
     expect(item.id).not.to.be.null && expect(item.id).not.to.be.undefined
@@ -95,7 +96,7 @@ describe('Item endpoint', () => {
         price: ${updateItem.price}, imageUrl: "${updateItem.imageUrl}") 
         { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-    const response = await request(httpServer).post('/api/v1/item').send({ query })
+    const response = await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query })
     const item = JSON.parse(response.text).data.updateOne
 
     expect(originalItem._id.toString()).to.be.eq(item.id)
@@ -119,7 +120,7 @@ describe('Item endpoint', () => {
       removeOne(id: "${originalItem._id}")
         { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-    await request(httpServer).post('/api/v1/item').send({ query: removeQuery })
+    await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query: removeQuery })
 
     const items = await itemContext.getAll()
     expect(items.length).to.be.eq(0)

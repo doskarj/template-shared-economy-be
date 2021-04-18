@@ -4,7 +4,8 @@ import { expect } from 'chai'
 
 import { httpServer } from '@/server'
 import db from '@/database'
-import { removeAllDecouments } from '../../testUtils'
+import { removeAllDecouments } from '../../testUtils/testUtils'
+import { authToken } from '../../testUtils/authTestUtils'
 
 import itemData from '@/test/testData/itemData'
 import userData from '../../testData/userData'
@@ -37,7 +38,7 @@ describe('Item Error endpoint', () => {
         price: ${updateItem.price}, imageUrl: "${updateItem.imageUrl}") 
         { id itemState itemType orderIds userId createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-    const response = await request(httpServer).post('/api/v1/item').send({ query })
+    const response = await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query })
 
     const errorMessage = JSON.parse(response.text)
     expect(errorMessage.errors[0].message.includes('SubEntityAlreadyPresent')).to.be.true
@@ -64,7 +65,7 @@ describe('Item Error endpoint', () => {
       removeOne(id: "${randomItem.id}")
         { id itemState itemType orderIds createdAt updatedAt location { lng lat } title price imageUrl } 
       }`
-    const response = await request(httpServer).post('/api/v1/item').send({ query: removeQuery })
+    const response = await request(httpServer).post('/api/v1/item').set('authorization', authToken).send({ query: removeQuery })
     
     const errorMessage = JSON.parse(response.text)
     expect(errorMessage.errors[0].message.includes('SubEntityAlreadyPresent')).to.be.true

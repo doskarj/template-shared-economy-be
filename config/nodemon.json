@@ -3,6 +3,8 @@
     "NODE_ENV": "development",
     "SERVER_IP": "0.0.0.0",
     "PORT": "3000",
-    "DB_URL": "mongodb+srv://test:test@mongodb.h4t10.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    "DB_URL": "mongodb+srv://test:test@mongodb.h4t10.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "AUTH0_DOMAIN": "template-shared-economy-be.eu.auth0.com",
+    "API_IDENTIFIER": "https://template-shared-economy-be-dev"
   }
 }

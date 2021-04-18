@@ -5,6 +5,7 @@ import ItemQLType from '@QL/type/itemQLType'
 import ItemStatesQLEnum from '@QL/enums/itemStatesQLEnum'
 import ItemTypesQLEnum from '@QL/enums/itemTypesQLEnum'
 import itemContext from '@mongo/context/itemContext'
+import auth from '@/auth/auth'
 
 const ItemQLMutations = new GraphQLObjectType({
   name: 'ItemQLMutations',
@@ -21,7 +22,11 @@ const ItemQLMutations = new GraphQLObjectType({
         price: { type: new GraphQLNonNull(GraphQLInt) },
         imageUrl: { type: new GraphQLNonNull(GraphQLString) }
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, context) {
+        if (!await auth.isAuthenticated(context)) {
+          auth.handleNotAuthenticated()
+        }
+        
         const item = await itemContext.createOne(args)
         return item
       }
@@ -38,7 +43,11 @@ const ItemQLMutations = new GraphQLObjectType({
         price: { type: new GraphQLNonNull(GraphQLInt) },
         imageUrl: { type: new GraphQLNonNull(GraphQLString) }
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, context) {
+        if (!await auth.isAuthenticated(context)) {
+          auth.handleNotAuthenticated()
+        }
+
         const item = await itemContext.updateOne(args)
         return item
       }
@@ -49,7 +58,11 @@ const ItemQLMutations = new GraphQLObjectType({
       args: {
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
-      async resolve(parent, args) {
+      async resolve(parent, args, context) {
+        if (!await auth.isAuthenticated(context)) {
+          auth.handleNotAuthenticated()
+        }
+
         const item = await itemContext.removeOne(args)
         return item
       }

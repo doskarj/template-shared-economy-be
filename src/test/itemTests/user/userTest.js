@@ -4,7 +4,7 @@ import { expect } from 'chai'
 
 import { httpServer } from '@/server'
 import db from '@/database'
-import { removeAllDecouments } from '../../testUtils'
+import { removeAllDecouments } from '../../testUtils/testUtils'
 
 import userData from '@/test/testData/userData'
 import itemData from '@/test/testData/itemData'
