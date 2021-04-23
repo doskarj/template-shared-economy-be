@@ -1,4 +1,3 @@
-import 'module-alias/register'
 import request from 'supertest'
 import { expect } from 'chai'
 

@@ -29,6 +29,7 @@
     "@babel/preset-env": "^7.13.12",
     "@babel/register": "^7.13.14",
     "babel-loader": "^8.2.2",
+    "babel-plugin-module-resolver": "^4.1.0",
     "chai": "^4.3.4",
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^7.0.2",
@@ -48,16 +49,9 @@
     "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.0.2",
-    "module-alias": "^2.2.2",
     "mongodb": "^3.6.6",
     "mongodb-client-encryption": "^1.2.3",
     "mongoose": "^5.12.3",
     "node-fetch": "^2.6.1"
-  },
-  "_moduleAliases": {
-    "@": "./src",
-    "@mongo": "./src/mongo",
-    "@QL": "./src/QL",
-    "@utils": "./src/utils/"
   }
 }

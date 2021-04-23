@@ -9,11 +9,21 @@
       }
     ]
   ],
-  "env": {
-    "test": {
-      "plugins": [
-        "@babel/plugin-transform-runtime"
-      ]
-    }
-  }
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./src"
+        ],
+        "alias": {
+          "@": "./src",
+          "@mongo": "./src/mongo",
+          "@QL": "./src/QL",
+          "@utils": "./src/utils/"
+        }
+      }
+    ]
+  ]
 }

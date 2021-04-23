@@ -1,4 +1,3 @@
-import 'module-alias/register'
 import db from './database'
 import startServer from './server'
 
